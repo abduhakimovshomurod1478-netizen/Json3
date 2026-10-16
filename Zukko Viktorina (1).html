@@ -1,0 +1,390 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Zukko Viktorina</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;700;800&family=JetBrains+Mono:wght@500;700&display=swap">
+<style>
+/* Layout: markazlashgan bitta ustun, katta rangli javob tugmalari, tepada vaqt chizig'i */
+:root {
+  --bg: #f3f1f8;
+  --surface: #ffffff;
+  --fg: #1c1833;
+  --muted: #655f80;
+  --line: #dcd8ea;
+  --accent: #4b2fd0;
+  --accent-fg: #ffffff;
+  --good: #0f7a4d;
+  --bad: #c0283c;
+  --c1: #d62b43;
+  --c2: #b5650a;
+  --c3: #0c7b69;
+  --c4: #4b2fd0;
+  --font-display: "Rubik", "Segoe UI", system-ui, sans-serif;
+  --font-body: "Rubik", "Segoe UI", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #15122a; --surface: #201c3d; --fg: #f1eefc; --muted: #a8a1c9; --line: #373060;
+    --accent: #8f7bff; --accent-fg: #14102e; --good: #43d391; --bad: #ff7a8c;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #15122a; --surface: #201c3d; --fg: #f1eefc; --muted: #a8a1c9; --line: #373060;
+  --accent: #8f7bff; --accent-fg: #14102e; --good: #43d391; --bad: #ff7a8c;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body {
+  background: var(--bg); color: var(--fg); font-family: var(--font-body);
+  font-size: 16px; line-height: 1.5;
+  padding-block: 20px 48px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+.wrap { max-width: 820px; margin: 0 auto; display: flex; flex-direction: column; gap: 24px; }
+header.top { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.brand { font-family: var(--font-display); font-weight: 800; font-size: 20px; letter-spacing: -0.01em; display: flex; align-items: center; gap: 10px; cursor: pointer; background: none; border: 0; color: inherit; padding: 0; }
+.brand i { display: grid; grid-template-columns: 1fr 1fr; width: 26px; height: 26px; gap: 3px; }
+.brand i b { border-radius: 4px; display: block; }
+.brand i b:nth-child(1) { background: var(--c1); } .brand i b:nth-child(2) { background: var(--c2); }
+.brand i b:nth-child(3) { background: var(--c3); } .brand i b:nth-child(4) { background: var(--c4); }
+h1, h2, h3 { font-family: var(--font-display); line-height: 1.15; margin: 0; text-wrap: balance; letter-spacing: -0.015em; }
+h1 { font-size: clamp(30px, 7vw, 48px); font-weight: 800; }
+h2 { font-size: clamp(22px, 5vw, 30px); font-weight: 700; }
+h3 { font-size: 18px; font-weight: 700; }
+p { margin: 0; }
+.muted { color: var(--muted); }
+.label { font-size: 12px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
+.mono { font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
+button { font: inherit; cursor: pointer; }
+button:focus-visible, input:focus-visible, textarea:focus-visible, select:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+.btn { border: 2px solid var(--fg); background: var(--surface); color: var(--fg); border-radius: 10px; padding: 10px 18px; font-weight: 700; min-height: 44px; }
+.btn:hover { background: var(--bg); }
+.btn.primary { background: var(--accent); border-color: var(--accent); color: var(--accent-fg); }
+.btn.primary:hover { filter: brightness(1.08); }
+.btn.ghost { border-color: var(--line); }
+.btn.danger { color: var(--bad); border-color: var(--bad); }
+.btn.big { padding: 14px 26px; font-size: 18px; }
+.row { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+.row.between { justify-content: space-between; }
+.stack { display: flex; flex-direction: column; gap: 14px; min-width: 0; }
+
+.hero { display: flex; flex-direction: column; gap: 12px; padding-top: 8px; }
+.hero p { max-width: 52ch; color: var(--muted); font-size: 17px; }
+.quizlist { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 14px; }
+.qcard { background: var(--surface); border: 2px solid var(--line); border-radius: 14px; padding: 18px; display: flex; flex-direction: column; gap: 14px; justify-content: space-between; min-width: 0; }
+.qcard .meta { display: flex; gap: 8px; flex-wrap: wrap; }
+.tag { font-size: 12px; font-weight: 700; padding: 3px 9px; border-radius: 99px; background: var(--bg); color: var(--muted); border: 1px solid var(--line); }
+.tag.mine { color: var(--accent); border-color: var(--accent); }
+
+.panel { background: var(--surface); border: 2px solid var(--line); border-radius: 14px; padding: 18px; }
+label.field { display: flex; flex-direction: column; gap: 6px; font-weight: 500; }
+input[type="text"], textarea, select {
+  font: inherit; color: var(--fg); background: var(--bg); border: 2px solid var(--line);
+  border-radius: 10px; padding: 10px 12px; width: 100%; min-width: 0;
+}
+textarea { resize: vertical; min-height: 70px; }
+
+.players { display: flex; flex-direction: column; gap: 10px; }
+.players .row { flex-wrap: nowrap; }
+
+.edq { display: flex; flex-direction: column; gap: 12px; }
+.opts { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 10px; }
+.opt { display: flex; align-items: center; gap: 8px; min-width: 0; }
+.opt input[type="radio"] { width: 22px; height: 22px; accent-color: var(--good); flex: none; }
+.dot { width: 14px; height: 14px; border-radius: 4px; flex: none; }
+.err { color: var(--bad); font-weight: 500; }
+
+.hud { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+.timer { font-family: var(--font-mono); font-weight: 700; font-size: 28px; font-variant-numeric: tabular-nums; }
+.bar { height: 12px; border-radius: 99px; background: var(--line); overflow: hidden; }
+.bar > div { height: 100%; width: 100%; background: var(--accent); border-radius: 99px; }
+.bar.low > div { background: var(--bad); }
+.question { background: var(--surface); border: 2px solid var(--line); border-radius: 14px; padding: 26px 20px; text-align: center; font-family: var(--font-display); font-weight: 700; font-size: clamp(22px, 5.5vw, 34px); line-height: 1.25; text-wrap: balance; }
+.answers { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+@media (max-width: 480px) { .answers { grid-template-columns: 1fr; } }
+.ans { display: flex; align-items: center; gap: 12px; text-align: left; border: 0; border-radius: 14px; padding: 18px 16px; min-height: 84px; color: #fff; font-weight: 700; font-size: clamp(16px, 4vw, 20px); transition: transform 0.08s; min-width: 0; }
+.ans:hover { transform: translateY(-2px); }
+.ans:active { transform: translateY(1px); }
+.ans .ltr { flex: none; width: 36px; height: 36px; border-radius: 50%; background: rgba(255,255,255,0.22); display: grid; place-items: center; font-family: var(--font-mono); }
+.ans span.t { overflow-wrap: anywhere; }
+.ans.a0 { background: var(--c1); } .ans.a1 { background: var(--c2); } .ans.a2 { background: var(--c3); } .ans.a3 { background: var(--c4); }
+.ans.dim { opacity: 0.35; }
+.ans.right { outline: 4px solid var(--good); outline-offset: 2px; }
+
+.center { text-align: center; align-items: center; }
+.bigname { font-size: clamp(34px, 10vw, 60px); font-weight: 800; font-family: var(--font-display); overflow-wrap: anywhere; }
+.board { display: flex; flex-direction: column; gap: 8px; }
+.brow { display: grid; grid-template-columns: 32px 1fr auto auto; gap: 12px; align-items: center; background: var(--surface); border: 2px solid var(--line); border-radius: 12px; padding: 10px 14px; }
+.brow .pos { font-family: var(--font-mono); font-weight: 700; color: var(--muted); }
+.brow .nm { font-weight: 700; overflow-wrap: anywhere; min-width: 0; }
+.brow .gain { font-family: var(--font-mono); font-weight: 700; font-size: 14px; }
+.brow .gain.ok { color: var(--good); } .brow .gain.no { color: var(--bad); }
+.brow .sc { font-family: var(--font-mono); font-weight: 700; font-variant-numeric: tabular-nums; }
+.correct { background: var(--surface); border: 2px solid var(--good); border-radius: 14px; padding: 16px 18px; display: flex; flex-direction: column; gap: 4px; }
+.correct b { font-size: 20px; overflow-wrap: anywhere; }
+.podium { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; align-items: end; max-width: 520px; margin: 0 auto; width: 100%; }
+.pcol { display: flex; flex-direction: column; align-items: center; gap: 6px; min-width: 0; }
+.pcol .nm { font-weight: 700; text-align: center; overflow-wrap: anywhere; }
+.pcol .blk { width: 100%; border-radius: 12px 12px 0 0; display: grid; place-items: start center; padding-top: 10px; font-family: var(--font-display); font-weight: 800; font-size: 34px; color: #fff; }
+.pcol.p1 .blk { height: 150px; background: var(--c4); }
+.pcol.p2 .blk { height: 108px; background: var(--c3); }
+.pcol.p3 .blk { height: 76px; background: var(--c2); }
+@media (prefers-reduced-motion: reduce) { .ans { transition: none; } }
+</style>
+
+<div class="wrap">
+  <header class="top">
+    <button class="brand" data-act="home" aria-label="Bosh sahifa"><i><b></b><b></b><b></b><b></b></i>Zukko Viktorina</button>
+    <span class="label" id="crumb"></span>
+  </header>
+  <main id="app" class="stack" aria-live="polite"></main>
+</div>
+
+<script>
+(function () {
+  var KEY = 'zukko.viktorina.v1';
+  var SAMPLES = [
+    { id: 's1', title: "O'zbekiston bo'yicha bilimdon", sample: true, questions: [
+      { q: "O'zbekistonning poytaxti qaysi shahar?", opts: ["Samarqand", "Buxoro", "Toshkent", "Xiva"], correct: 2, time: 15 },
+      { q: "Amir Temur maqbarasi (Go'ri Amir) qaysi shaharda joylashgan?", opts: ["Samarqand", "Qarshi", "Termiz", "Andijon"], correct: 0, time: 15 },
+      { q: "Alisher Navoiy asarlarini asosan qaysi tilda yozgan?", opts: ["Arab tilida", "Eski o'zbek (chig'atoy) tilida", "Rus tilida", "Yunon tilida"], correct: 1, time: 20 },
+      { q: "Orol dengizi qaysi ikki davlat hududida joylashgan?", opts: ["O'zbekiston va Turkmaniston", "Qirg'iziston va Tojikiston", "O'zbekiston va Qozog'iston", "Eron va Afg'oniston"], correct: 2, time: 20 },
+      { q: "O'zbekiston Mustaqillik kuni qachon nishonlanadi?", opts: ["1 sentabr", "21 mart", "9 may", "8 dekabr"], correct: 0, time: 15 },
+      { q: "O'zbekistonning eng baland cho'qqisi qaysi?", opts: ["Chimyon", "Xazrati Sulton", "Beshtor", "Ko'k-Tosh"], correct: 1, time: 25 }
+    ]},
+    { id: 's2', title: "Umumiy bilim: tezkor 5 savol", sample: true, questions: [
+      { q: "Quyosh tizimidagi eng katta sayyora qaysi?", opts: ["Saturn", "Yupiter", "Neptun", "Yer"], correct: 1, time: 15 },
+      { q: "Suvning kimyoviy formulasi qanday?", opts: ["CO2", "NaCl", "H2O", "O2"], correct: 2, time: 10 },
+      { q: "7 × 8 nechaga teng?", opts: ["54", "56", "63", "48"], correct: 1, time: 10 },
+      { q: "Oltinning kimyoviy belgisi qaysi?", opts: ["Ag", "Fe", "Au", "Go"], correct: 2, time: 15 },
+      { q: "Bir haftada nechta kun bor?", opts: ["5", "6", "8", "7"], correct: 3, time: 10 }
+    ]}
+  ];
+  var LTR = ['A', 'B', 'C', 'D'];
+  var app = document.getElementById('app');
+  var crumb = document.getElementById('crumb');
+  var custom = loadCustom();
+  var S = { screen: 'home', edit: null, setupQuiz: null, names: [''], g: null, msg: '' };
+  var timerId = null;
+
+  function loadCustom() { try { var v = JSON.parse(localStorage.getItem(KEY)); return Array.isArray(v) ? v : []; } catch (e) { return []; } }
+  function saveCustom() { try { localStorage.setItem(KEY, JSON.stringify(custom)); } catch (e) {} }
+  function esc(s) { return String(s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
+  function uid() { return 'q' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6); }
+  function allQuizzes() { return SAMPLES.concat(custom); }
+  function findQuiz(id) { return allQuizzes().filter(function (q) { return q.id === id; })[0]; }
+  function clone(o) { return JSON.parse(JSON.stringify(o)); }
+  function blankQ() { return { q: '', opts: ['', '', '', ''], correct: 0, time: 20 }; }
+  function stopTimer() { if (timerId) { clearInterval(timerId); timerId = null; } }
+
+  function go(screen) { stopTimer(); S.screen = screen; render(); window.scrollTo(0, 0); }
+
+  function render() {
+    var fn = { home: vHome, edit: vEdit, setup: vSetup, turn: vTurn, question: vQuestion, pass: vPass, round: vRound, final: vFinal }[S.screen];
+    var names = { home: '', edit: 'Muharrir', setup: "O'yinchilar", turn: 'Navbat', question: 'Savol', pass: 'Navbat', round: 'Natijalar', final: 'Yakun' };
+    crumb.textContent = names[S.screen] || '';
+    app.innerHTML = fn();
+    if (S.screen === 'question') startTimer();
+  }
+
+  /* ---------- Bosh sahifa ---------- */
+  function vHome() {
+    var cards = allQuizzes().map(function (q) {
+      var secs = q.questions.reduce(function (a, x) { return a + x.time; }, 0);
+      return '<article class="qcard"><div class="stack" style="gap:8px"><div class="meta"><span class="tag' + (q.sample ? '' : ' mine') + '">' + (q.sample ? 'Namuna' : 'Mening viktorinam') + '</span><span class="tag">' + q.questions.length + ' savol</span><span class="tag">~' + Math.ceil(secs / 60) + ' daqiqa</span></div><h3>' + esc(q.title) + '</h3></div>' +
+        '<div class="row"><button class="btn primary" data-act="play" data-id="' + q.id + '">Boshlash</button>' +
+        (q.sample ? '<button class="btn ghost" data-act="copy" data-id="' + q.id + '">Nusxa olish</button>' : '<button class="btn ghost" data-act="edit" data-id="' + q.id + '">Tahrirlash</button>') + '</div></article>';
+    }).join('');
+    return '<section class="hero"><h1>Doʻstlar bilan viktorina oʻyna</h1><p>Savollarni oʻzingiz yozing, bitta qurilmada navbat bilan oʻynang. Javob qancha tez boʻlsa, ball shuncha koʻp, ketma-ket toʻgʻri javoblar esa qoʻshimcha bonus beradi.</p><div class="row"><button class="btn primary big" data-act="new">Yangi viktorina yaratish</button></div></section>' +
+      '<section class="stack"><span class="label">Viktorinalar</span><div class="quizlist">' + cards + '</div></section>';
+  }
+
+  /* ---------- Muharrir ---------- */
+  function vEdit() {
+    var e = S.edit;
+    var qs = e.questions.map(function (q, i) {
+      var opts = q.opts.map(function (o, k) {
+        return '<div class="opt"><input type="radio" name="c' + i + '" id="r' + i + '_' + k + '" data-qi="' + i + '" data-f="correct" value="' + k + '"' + (q.correct === k ? ' checked' : '') + ' aria-label="Toʻgʻri javob ' + LTR[k] + '"><span class="dot" style="background:var(--c' + (k + 1) + ')"></span><input type="text" id="o' + i + '_' + k + '" data-qi="' + i + '" data-oi="' + k + '" placeholder="Variant ' + LTR[k] + '" value="' + esc(o) + '" maxlength="90"></div>';
+      }).join('');
+      var timeOpts = [10, 15, 20, 30, 45, 60].map(function (t) { return '<option value="' + t + '"' + (q.time === t ? ' selected' : '') + '>' + t + ' soniya</option>'; }).join('');
+      return '<div class="panel edq"><div class="row between"><span class="label">' + (i + 1) + '-savol</span>' + (e.questions.length > 1 ? '<button class="btn ghost danger" data-act="delq" data-qi="' + i + '">Oʻchirish</button>' : '') + '</div>' +
+        '<label class="field" for="q' + i + '">Savol matni<textarea id="q' + i + '" data-qi="' + i + '" data-f="q" maxlength="200">' + esc(q.q) + '</textarea></label>' +
+        '<div class="stack" style="gap:8px"><span class="label">Variantlar (toʻgʻri javobni belgilang)</span><div class="opts">' + opts + '</div></div>' +
+        '<label class="field" for="t' + i + '" style="max-width:220px">Vaqt<select id="t' + i + '" data-qi="' + i + '" data-f="time">' + timeOpts + '</select></label></div>';
+    }).join('');
+    return '<h2>' + (e.isNew ? 'Yangi viktorina' : 'Viktorinani tahrirlash') + '</h2>' +
+      '<label class="field" for="title">Viktorina nomi<input type="text" id="title" data-f="title" value="' + esc(e.title) + '" maxlength="60" placeholder="Masalan: Tarix boʻyicha test"></label>' + qs +
+      '<div class="row"><button class="btn" data-act="addq">+ Savol qoʻshish</button></div>' +
+      (S.msg ? '<p class="err" role="alert">' + esc(S.msg) + '</p>' : '') +
+      '<div class="row"><button class="btn primary big" data-act="saveq">Saqlash</button><button class="btn ghost" data-act="home">Bekor qilish</button>' + (e.isNew ? '' : '<button class="btn ghost danger" data-act="delquiz">Viktorinani oʻchirish</button>') + '</div>';
+  }
+
+  /* ---------- O'yinchilar ---------- */
+  function vSetup() {
+    var q = S.setupQuiz;
+    var rows = S.names.map(function (n, i) {
+      return '<div class="row"><input type="text" id="p' + i + '" data-pi="' + i + '" value="' + esc(n) + '" placeholder="' + (i + 1) + '-oʻyinchi ismi" maxlength="20" aria-label="' + (i + 1) + '-oʻyinchi ismi">' + (S.names.length > 1 ? '<button class="btn ghost" data-act="delp" data-pi="' + i + '" aria-label="Oʻchirish">✕</button>' : '') + '</div>';
+    }).join('');
+    return '<div class="stack"><span class="label">Viktorina</span><h2>' + esc(q.title) + '</h2><p class="muted">Har bir savolda oʻyinchilar navbat bilan javob beradi. Qurilmani keyingi oʻyinchiga uzating.</p></div>' +
+      '<div class="panel players">' + rows + (S.names.length < 6 ? '<div class="row"><button class="btn ghost" data-act="addp">+ Oʻyinchi qoʻshish</button></div>' : '') + '</div>' +
+      '<div class="row"><button class="btn primary big" data-act="start">Oʻyinni boshlash</button><button class="btn ghost" data-act="home">Orqaga</button></div>';
+  }
+
+  /* ---------- O'yin ---------- */
+  function cur() { var g = S.g; return g.quiz.questions[g.qi]; }
+  function head() { var g = S.g; return '<div class="hud"><span class="label">Savol ' + (g.qi + 1) + ' / ' + g.quiz.questions.length + '</span><span class="label">' + esc(g.players[g.pi].name) + '</span></div>'; }
+
+  function vTurn() {
+    var g = S.g, p = g.players[g.pi];
+    return '<div class="stack center" style="padding:24px 0">' + head() + '<p class="muted">Navbat:</p><div class="bigname">' + esc(p.name) + '</div><p class="muted">Tayyor boʻlsangiz, savolni oching. Vaqt shu zahoti ketadi.</p><button class="btn primary big" data-act="begin">Savolni ochish</button></div>';
+  }
+
+  function vQuestion() {
+    var g = S.g, q = cur();
+    var ans = q.opts.map(function (o, k) {
+      return '<button class="ans a' + k + '" data-act="ans" data-k="' + k + '"><span class="ltr">' + LTR[k] + '</span><span class="t">' + esc(o) + '</span></button>';
+    }).join('');
+    return head() + '<div class="row between"><span class="label">Qolgan vaqt</span><span class="timer" id="tl">' + q.time + '</span></div><div class="bar" id="bar"><div id="barin"></div></div>' +
+      '<div class="question">' + esc(q.q) + '</div><div class="answers">' + ans + '</div>';
+  }
+
+  function startTimer() {
+    var g = S.g, q = cur();
+    g.t0 = performance.now();
+    var tl = document.getElementById('tl'), bi = document.getElementById('barin'), bar = document.getElementById('bar');
+    timerId = setInterval(function () {
+      var left = q.time - (performance.now() - g.t0) / 1000;
+      if (left <= 0) { stopTimer(); submit(-1); return; }
+      tl.textContent = Math.ceil(left);
+      bi.style.width = (left / q.time * 100) + '%';
+      if (left <= 5) bar.className = 'bar low';
+    }, 100);
+  }
+
+  function submit(k) {
+    var g = S.g, q = cur(), p = g.players[g.pi];
+    var elapsed = Math.min(q.time, (performance.now() - g.t0) / 1000);
+    var ok = k === q.correct, pts = 0;
+    if (ok) {
+      p.streak += 1;
+      pts = Math.round(1000 * (1 - (elapsed / q.time) * 0.5)) + 50 * Math.min(p.streak - 1, 5);
+    } else { p.streak = 0; }
+    p.score += pts;
+    p.last = { k: k, ok: ok, pts: pts };
+    if (g.pi < g.players.length - 1) { go('pass'); } else { go('round'); }
+  }
+
+  function vPass() {
+    var g = S.g, next = g.players[g.pi + 1];
+    return '<div class="stack center" style="padding:24px 0"><h2>Javob qabul qilindi</h2><p class="muted">Natijalar hamma javob bergach koʻrsatiladi. Qurilmani uzating:</p><div class="bigname">' + esc(next.name) + '</div><button class="btn primary big" data-act="nextp">Men tayyorman</button></div>';
+  }
+
+  function standings() {
+    return S.g.players.map(function (p, i) { return { p: p, i: i }; }).sort(function (a, b) { return b.p.score - a.p.score || a.i - b.i; });
+  }
+
+  function vRound() {
+    var g = S.g, q = cur(), lastQ = g.qi === g.quiz.questions.length - 1;
+    var rows = standings().map(function (r, n) {
+      var l = r.p.last;
+      var gain = l.ok ? '<span class="gain ok">+' + l.pts + '</span>' : '<span class="gain no">' + (l.k === -1 ? 'vaqt tugadi' : 'xato') + '</span>';
+      return '<div class="brow"><span class="pos">' + (n + 1) + '</span><span class="nm">' + esc(r.p.name) + (r.p.streak >= 2 ? ' 🔥' + r.p.streak : '') + '</span>' + gain + '<span class="sc">' + r.p.score + '</span></div>';
+    }).join('');
+    return '<div class="hud"><span class="label">Savol ' + (g.qi + 1) + ' / ' + g.quiz.questions.length + '</span><span class="label">Natijalar</span></div>' +
+      '<div class="correct"><span class="label">Toʻgʻri javob</span><b>' + LTR[q.correct] + '. ' + esc(q.opts[q.correct]) + '</b></div>' +
+      '<div class="board">' + rows + '</div>' +
+      '<div class="row"><button class="btn primary big" data-act="nextq">' + (lastQ ? 'Yakuniy natija' : 'Keyingi savol') + '</button></div>';
+  }
+
+  function vFinal() {
+    var st = standings(), medals = ['p1', 'p2', 'p3'];
+    var order = st.length >= 3 ? [1, 0, 2] : (st.length === 2 ? [1, 0] : [0]);
+    var pod = order.map(function (i) {
+      return '<div class="pcol ' + medals[i] + '"><span class="nm">' + esc(st[i].p.name) + '</span><span class="mono muted">' + st[i].p.score + '</span><div class="blk">' + (i + 1) + '</div></div>';
+    }).join('');
+    var rows = st.map(function (r, n) { return '<div class="brow"><span class="pos">' + (n + 1) + '</span><span class="nm">' + esc(r.p.name) + '</span><span></span><span class="sc">' + r.p.score + '</span></div>'; }).join('');
+    var max = S.g.quiz.questions.length * 1000;
+    return '<div class="stack center"><span class="label">Viktorina tugadi</span><h1>' + (st.length > 1 ? esc(st[0].p.name) + ' gʻolib!' : 'Natijangiz: ' + st[0].p.score) + '</h1><p class="muted">' + esc(S.g.quiz.title) + ' · eng koʻpi bilan ' + max + ' ballgacha (bonuslarsiz)</p></div>' +
+      '<div class="podium" style="' + (st.length === 1 ? 'grid-template-columns:1fr;max-width:200px' : (st.length === 2 ? 'grid-template-columns:1fr 1fr' : '')) + '">' + pod + '</div>' +
+      '<div class="board">' + rows + '</div>' +
+      '<div class="row"><button class="btn primary big" data-act="again">Qayta oʻynash</button><button class="btn ghost" data-act="home">Bosh sahifa</button></div>';
+  }
+
+  /* ---------- Hodisalar ---------- */
+  app.addEventListener('click', onClick);
+  document.querySelector('header.top').addEventListener('click', onClick);
+
+  function onClick(ev) {
+    var t = ev.target.closest('[data-act]');
+    if (!t) return;
+    var a = t.getAttribute('data-act'), id = t.getAttribute('data-id');
+    var qi = +t.getAttribute('data-qi'), pi = +t.getAttribute('data-pi');
+    if (a === 'home') { S.msg = ''; go('home'); }
+    else if (a === 'new') { S.msg = ''; S.edit = { id: uid(), title: '', isNew: true, questions: [blankQ()] }; go('edit'); }
+    else if (a === 'edit') { S.msg = ''; var q = clone(findQuiz(id)); S.edit = q; go('edit'); }
+    else if (a === 'copy') { var c = clone(findQuiz(id)); c.id = uid(); c.sample = false; c.title = c.title + ' (nusxa)'; custom.push(c); saveCustom(); S.msg = ''; S.edit = c; go('edit'); }
+    else if (a === 'addq') { S.edit.questions.push(blankQ()); render(); }
+    else if (a === 'delq') { S.edit.questions.splice(qi, 1); render(); }
+    else if (a === 'delquiz') { custom = custom.filter(function (x) { return x.id !== S.edit.id; }); saveCustom(); go('home'); }
+    else if (a === 'saveq') { saveQuiz(); }
+    else if (a === 'play') { S.setupQuiz = findQuiz(id); if (S.names.length === 0) S.names = ['']; go('setup'); }
+    else if (a === 'addp') { S.names.push(''); render(); }
+    else if (a === 'delp') { S.names.splice(pi, 1); render(); }
+    else if (a === 'start') { startGame(); }
+    else if (a === 'begin') { go('question'); }
+    else if (a === 'ans') { stopTimer(); submit(+t.getAttribute('data-k')); }
+    else if (a === 'nextp') { S.g.pi += 1; go('turn'); }
+    else if (a === 'nextq') {
+      var g = S.g;
+      if (g.qi >= g.quiz.questions.length - 1) { go('final'); return; }
+      g.qi += 1; g.pi = 0; go(g.players.length > 1 ? 'turn' : 'question');
+    }
+    else if (a === 'again') { startGame(true); }
+  }
+
+  app.addEventListener('input', function (ev) {
+    var t = ev.target;
+    if (S.screen === 'edit') {
+      var e = S.edit, f = t.getAttribute('data-f'), qi = t.getAttribute('data-qi'), oi = t.getAttribute('data-oi');
+      if (f === 'title') e.title = t.value;
+      else if (oi !== null) e.questions[+qi].opts[+oi] = t.value;
+      else if (f === 'q') e.questions[+qi].q = t.value;
+      else if (f === 'time') e.questions[+qi].time = +t.value;
+      else if (f === 'correct') e.questions[+qi].correct = +t.value;
+    } else if (S.screen === 'setup') {
+      var pi = t.getAttribute('data-pi');
+      if (pi !== null) S.names[+pi] = t.value;
+    }
+  });
+
+  function saveQuiz() {
+    var e = S.edit;
+    if (!e.title.trim()) { S.msg = 'Viktorinaga nom bering.'; render(); return; }
+    for (var i = 0; i < e.questions.length; i++) {
+      var q = e.questions[i];
+      if (!q.q.trim()) { S.msg = (i + 1) + '-savol matni boʻsh. Matn yozing yoki savolni oʻchiring.'; render(); return; }
+      for (var k = 0; k < 4; k++) if (!q.opts[k].trim()) { S.msg = (i + 1) + '-savolda ' + LTR[k] + ' variant boʻsh. Barcha 4 variantni toʻldiring.'; render(); return; }
+    }
+    var out = clone(e); delete out.isNew; out.sample = false;
+    var idx = -1;
+    custom.forEach(function (x, n) { if (x.id === out.id) idx = n; });
+    if (idx >= 0) custom[idx] = out; else custom.push(out);
+    saveCustom(); S.msg = ''; go('home');
+  }
+
+  function startGame(same) {
+    var names = same ? S.g.players.map(function (p) { return p.name; }) : S.names.map(function (n, i) { return n.trim() || ('Oʻyinchi ' + (i + 1)); });
+    var quiz = same ? S.g.quiz : S.setupQuiz;
+    S.g = { quiz: quiz, qi: 0, pi: 0, t0: 0, players: names.map(function (n) { return { name: n, score: 0, streak: 0, last: null }; }) };
+    go(names.length > 1 ? 'turn' : 'question');
+  }
+
+  render();
+})();
+</script>
+
+</body></html>
