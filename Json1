@@ -1,0 +1,296 @@
+const express = require('express');
+const http = require('http');
+const { Server } = require('socket.io');
+
+const app = express();
+const server = http.createServer(app);
+const io = new Server(server);
+
+let students = {};
+let currentVideoUrl = "";
+
+// Barcha sahifalar jamlangan yagona HTML interfeysi
+const htmlContent = `
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <title>Kahoot Interaktiv Dars Platformasi</title>
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        #board, #studentBoard { border: 2px solid #4F46E5; cursor: crosshair; background: #fff; }
+    </style>
+</head>
+<body class="bg-slate-900 text-white min-h-screen p-5 font-sans">
+    
+    <!-- 1. Rol Tanlash Sahifasi -->
+    <div id="roleSelection" class="max-w-md mx-auto mt-20 bg-slate-800 p-8 rounded-2xl shadow-2xl text-center border border-slate-700">
+        <h1 class="text-3xl font-bold mb-2 text-indigo-400">🎓 Interaktiv Dars</h1>
+        <p class="text-slate-400 mb-6">Kahoot & YouTube & Doska Platformasi</p>
+        <div class="space-y-4">
+            <button onclick="showAdminPanel()" class="w-full bg-indigo-600 hover:bg-indigo-700 p-3 rounded-xl font-bold transition">👨‍🏫 O'qituvchi (Admin) Sifatida Kirish</button>
+            <button onclick="showStudentPanel()" class="w-full bg-emerald-600 hover:bg-emerald-700 p-3 rounded-xl font-bold transition">👨‍🎓 O'quvchi Sifatida Kirish</button>
+        </div>
+    </div>
+
+    <!-- 2. O'qituvchi (Admin) Paneli -->
+    <div id="adminPanel" class="hidden max-w-7xl mx-auto space-y-6">
+        <div class="flex justify-between items-center bg-slate-800 p-4 rounded-xl border border-slate-700">
+            <h2 class="text-2xl font-bold text-indigo-400">🛠 Admin Boshqaruv Markazi</h2>
+            <button onclick="location.reload()" class="bg-rose-600 hover:bg-rose-700 px-4 py-2 rounded-lg font-bold text-sm">Chiqish</button>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div class="bg-slate-800 p-5 rounded-xl shadow-lg space-y-6 border border-slate-700">
+                <div>
+                    <h3 class="text-lg font-semibold mb-2">📺 YouTube Dars Linki</h3>
+                    <input type="text" id="ytUrlInput" placeholder="https://www.youtube.com/embed/..." class="w-full p-2.5 rounded-lg bg-slate-700 text-sm border border-slate-600 mb-2">
+                    <button onclick="updateVideo()" class="w-full bg-red-600 hover:bg-red-700 p-2.5 rounded-lg font-bold text-sm">Videoni Uzatish</button>
+                </div>
+                <div class="border-t border-slate-700 pt-4">
+                    <h3 class="text-lg font-semibold mb-2">🎲 Random Savol-Javob</h3>
+                    <button onclick="pickRandomStudent()" class="w-full bg-emerald-600 hover:bg-emerald-700 p-3 rounded-lg font-bold">Random O'quvchi Tanlash</button>
+                    <div id="selectedResult" class="mt-3 text-center text-lg font-bold text-yellow-400"></div>
+                </div>
+                <div class="border-t border-slate-700 pt-4">
+                    <h3 class="text-lg font-semibold mb-2">👥 Ulangan O'quvchilar</h3>
+                    <div id="studentListAdmin" class="space-y-2 max-h-48 overflow-y-auto"></div>
+                </div>
+            </div>
+            <div class="md:col-span-2 bg-slate-800 p-5 rounded-xl shadow-lg border border-slate-700">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-lg font-semibold">✏️ Jonli Interaktiv Doska</h3>
+                    <button onclick="clearBoard()" class="bg-amber-600 hover:bg-amber-700 px-4 py-2 rounded-lg text-sm font-bold">Doskani Tozalash</button>
+                </div>
+                <canvas id="board" width="700" height="400" class="w-full rounded-lg"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- 3. O'quvchi Ro'yxatdan O'tish Kabineti -->
+    <div id="studentLoginModal" class="hidden max-w-md mx-auto mt-20 bg-slate-800 p-8 rounded-2xl shadow-2xl text-center border border-slate-700">
+        <h2 class="text-2xl font-bold mb-4">O'quvchi Kabinetiga Kirish</h2>
+        <input type="text" id="studentName" placeholder="Ismingizni kiriting..." class="w-full p-3 rounded-lg bg-slate-700 mb-4 border border-slate-600 text-center">
+        <p class="mb-2 font-semibold text-slate-300 text-sm">Noodatiy Avatar Tanlang:</p>
+        <div id="avatarOptions" class="flex justify-center space-x-3 mb-6"></div>
+        <button onclick="joinClass()" class="w-full bg-indigo-600 hover:bg-indigo-700 p-3 rounded-lg font-bold">Darsga Qo'shilish</button>
+    </div>
+
+    <!-- 4. O'quvchi Dars Xonasi -->
+    <div id="studentClassroom" class="hidden max-w-6xl mx-auto space-y-6">
+        <div class="flex items-center justify-between bg-slate-800 p-4 rounded-xl border border-slate-700">
+            <div class="flex items-center space-x-4">
+                <img id="myAvatar" class="w-12 h-12 rounded-full border-2 border-indigo-500 bg-slate-700">
+                <div>
+                    <h3 id="myName" class="text-xl font-bold"></h3>
+                    <span class="text-xs text-emerald-400 font-semibold">● Onlayn Darsda</span>
+                </div>
+            </div>
+            <div id="alertBox" class="text-yellow-400 font-bold animate-pulse text-lg"></div>
+            <button onclick="location.reload()" class="bg-rose-600 hover:bg-rose-700 px-3 py-1.5 rounded-lg font-bold text-xs">Chiqish</button>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="bg-slate-800 p-4 rounded-xl border border-slate-700">
+                <h3 class="text-lg font-bold mb-3">📺 Jonli Dars (YouTube)</h3>
+                <iframe id="ytPlayer" class="w-full h-64 rounded-lg bg-slate-900" src="" frameborder="0" allowfullscreen></iframe>
+            </div>
+            <div class="bg-slate-800 p-4 rounded-xl border border-slate-700">
+                <h3 class="text-lg font-bold mb-3">✏️ O'qituvchi Doskasi</h3>
+                <canvas id="studentBoard" width="500" height="250" class="w-full rounded-lg"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript Logikasi -->
+    <script>
+        const socket = io();
+
+        function showAdminPanel() {
+            document.getElementById('roleSelection').classList.add('hidden');
+            document.getElementById('adminPanel').classList.remove('hidden');
+            initAdminCanvas();
+        }
+
+        function showStudentPanel() {
+            document.getElementById('roleSelection').classList.add('hidden');
+            document.getElementById('studentLoginModal').classList.remove('hidden');
+            setupAvatars();
+        }
+
+        let selectedAvatar = "";
+        const avatarSeeds = ['Felix', 'Aneka', 'Zack', 'Midnight', 'Spooky', 'Ginger'];
+        function setupAvatars() {
+            const container = document.getElementById('avatarOptions');
+            container.innerHTML = '';
+            avatarSeeds.forEach((seed, index) => {
+                const url = \`https://api.dicebear.com/7.x/bottts/svg?seed=\${seed}\`;
+                if(index === 0) selectedAvatar = url;
+                const img = document.createElement('img');
+                img.src = url;
+                img.className = 'w-12 h-12 rounded-full cursor-pointer border-2 border-transparent hover:border-indigo-500 p-1 bg-slate-700 transition';
+                img.onclick = () => {
+                    document.querySelectorAll('#avatarOptions img').forEach(el => el.classList.remove('border-indigo-500'));
+                    img.classList.add('border-indigo-500');
+                    selectedAvatar = url;
+                };
+                if(index === 0) img.classList.add('border-indigo-500');
+                container.appendChild(img);
+            });
+        }
+
+        function joinClass() {
+            const name = document.getElementById('studentName').value;
+            if(!name) return alert('Iltimos, ismingizni kiriting!');
+            document.getElementById('studentLoginModal').classList.add('hidden');
+            document.getElementById('studentClassroom').classList.remove('hidden');
+            document.getElementById('myName').innerText = name;
+            document.getElementById('myAvatar').src = selectedAvatar;
+
+            socket.emit('join_student', { name, avatar: selectedAvatar });
+            initStudentCanvas();
+        }
+
+        let adminCtx, studentCtx;
+        function initAdminCanvas() {
+            const canvas = document.getElementById('board');
+            adminCtx = canvas.getContext('2d');
+            let drawing = false;
+
+            canvas.addEventListener('mousedown', () => drawing = true);
+            canvas.addEventListener('mouseup', () => drawing = false);
+            canvas.addEventListener('mousemove', (e) => {
+                if(!drawing) return;
+                const rect = canvas.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                adminCtx.lineWidth = 3;
+                adminCtx.lineCap = 'round';
+                adminCtx.strokeStyle = '#4F46E5';
+                adminCtx.lineTo(x, y);
+                adminCtx.stroke();
+                adminCtx.beginPath();
+                adminCtx.moveTo(x, y);
+                socket.emit('draw_line', { x, y });
+            });
+        }
+
+        function clearBoard() {
+            if(adminCtx) adminCtx.clearRect(0, 0, 700, 400);
+            socket.emit('clear_board');
+        }
+
+        function updateVideo() {
+            const url = document.getElementById('ytUrlInput').value;
+            socket.emit('change_youtube_video', url);
+        }
+
+        function pickRandomStudent() {
+            socket.emit('select_random_student');
+        }
+
+        function initStudentCanvas() {
+            const canvas = document.getElementById('studentBoard');
+            studentCtx = canvas.getContext('2d');
+        }
+
+        socket.on('clear_board', () => {
+            if(adminCtx) adminCtx.clearRect(0, 0, 700, 400);
+            if(studentCtx) studentCtx.clearRect(0, 0, 500, 250);
+        });
+
+        socket.on('draw_line', (data) => {
+            if(studentCtx) {
+                studentCtx.lineWidth = 3;
+                studentCtx.lineCap = 'round';
+                studentCtx.strokeStyle = '#4F46E5';
+                studentCtx.lineTo(data.x, data.y);
+                studentCtx.stroke();
+                studentCtx.beginPath();
+                studentCtx.moveTo(data.x, data.y);
+            }
+        });
+
+        socket.on('sync_youtube_video', (url) => {
+            const iframe = document.getElementById('ytPlayer');
+            if(iframe) iframe.src = url;
+        });
+
+        socket.on('student_selected_event', (student) => {
+            const res = document.getElementById('selectedResult');
+            if(res) res.innerHTML = \`🎯 Tanlandi: <img src="\${student.avatar}" class="w-8 h-8 inline rounded-full bg-slate-700"> \${student.name}\`;
+            
+            const alertBox = document.getElementById('alertBox');
+            if(alertBox) {
+                if(student.id === socket.id) {
+                    alertBox.innerText = "🎯 Siz tanlandingiz! Javob bering!";
+                } else {
+                    alertBox.innerText = \`📢 Navbat: \${student.name}\`;
+                }
+            }
+        });
+
+        socket.on('update_student_list', (list) => {
+            const container = document.getElementById('studentListAdmin');
+            if(container) {
+                container.innerHTML = list.map(s => \`
+                    <div class="flex items-center space-x-3 p-2 bg-slate-700 rounded-lg">
+                        <img src="\${s.avatar}" class="w-8 h-8 rounded-full bg-slate-600">
+                        <span class="text-sm font-medium">\${s.name}</span>
+                    </div>
+                \`).join('');
+            }
+        });
+    </script>
+</body>
+</html>
+`;
+
+app.get('/', (req, res) => {
+    res.send(htmlContent);
+});
+
+// Real vaqt rejimida tarmoqni boshqarish (Socket.io)
+io.on('connection', (socket) => {
+    console.log('Foydalanuvchi ulandi:', socket.id);
+
+    socket.on('join_student', (data) => {
+        students[socket.id] = {
+            id: socket.id,
+            name: data.name,
+            avatar: data.avatar
+        };
+        io.emit('update_student_list', Object.values(students));
+    });
+
+    socket.on('change_youtube_video', (url) => {
+        currentVideoUrl = url;
+        io.emit('sync_youtube_video', url);
+    });
+
+    socket.on('draw_line', (data) => {
+        socket.broadcast.emit('draw_line', data);
+    });
+
+    socket.on('clear_board', () => {
+        io.emit('clear_board');
+    });
+
+    socket.on('select_random_student', () => {
+        const list = Object.values(students);
+        if(list.length > 0) {
+            const random = list[Math.floor(Math.random() * list.length)];
+            io.emit('student_selected_event', random);
+        }
+    });
+
+    socket.on('disconnect', () => {
+        delete students[socket.id];
+        io.emit('update_student_list', Object.values(students));
+    });
+});
+
+const PORT = process.env.PORT || 3000;
+server.listen(PORT, () => {
+    console.log(\`🚀 Server ishga tushdi: http://localhost:\${PORT}\`);
+});
